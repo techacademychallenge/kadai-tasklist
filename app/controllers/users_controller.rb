@@ -6,6 +6,9 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
+    require_current_user_logged_in(@user)
+    @tasks = @user.tasks.page(params[:page])
+    counts(@user)
   end
 
   def new
@@ -28,5 +31,11 @@ class UsersController < ApplicationController
   
   def users_params
     params.require(:user).permit(:name, :email, :password, :password_confirmation)
+  end
+  
+  def require_current_user_logged_in(user)
+    unless current_user == user
+      redirect_to root_url
+    end
   end
 end
